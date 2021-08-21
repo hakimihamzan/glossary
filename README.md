@@ -1,7 +1,7 @@
 # [Glossary](https://hakimihamzan.github.io/glossary/)
 
 This webpage was designed to demonstrate my skills with JavaScript.
-It consists of three main files. Index.html, glossaryData.js and glossary.js. Its is a full fledge webpage with its entire content dynamically generated in JavaScript.
+It consists of three main files. Index.html, glossaryData.js and glossary.js. Its is a full fledge webpage with its entire content dynamically generated using JavaScript.
 
 
 ___
