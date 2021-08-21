@@ -28,6 +28,13 @@ let glossary = [
 glossary.js is where all the magic happens. Processing data etc. is done here.
 
 
+## Tech
+
+- HTML
+- CSS
+- JavaScript
+- Bootstrap
+
 ## Contributing
 MEH!!
 
