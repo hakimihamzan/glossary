@@ -1,12 +1,12 @@
-//  --------------------------------------------------------------------------------default homepage
+//  -------------------------------------------------display all in glossary at the start--------------default homepage
 
 let divCenterInfo = document.querySelector("div.middle-info");
-count = 1;
+alternateBackgroundCount = 1;
 
 function insertHTMLDefault(item) {
   let divOne = document.createElement("div");
   divOne.classList.add("p-5");
-  if (count % 2 === 0) {
+  if (alternateBackgroundCount % 2 === 0) {
     divOne.style.background = "black";
     divOne.style.color = "white";
   } else {
@@ -32,115 +32,152 @@ function insertHTMLDefault(item) {
 
   divCenterInfo.appendChild(divOne);
 
-  count++;
+  alternateBackgroundCount++;
 }
 
 glossary.forEach(insertHTMLDefault);
 
 //  -------------------------------------------------------------------------------
 //  -------------------------------------------------------------------------------
+//  -------------------------------------------------------------------------------
+//  -------------------------------------------------------------------------------
 //  --------------------------------------------------------------------------------search function
 
 let searchBtn = document.querySelector("button.search-etc");
 let searchInput = document.querySelector("input.search-etc");
+let dropDownSelect = document.querySelector("select.class-drop-select");
 
 // callback function when search
 function searchTerm() {
   let searchWord = searchInput.value;
   let searchWordLow = searchWord.toLowerCase();
 
-  // creating a filtered glossary containing the keyword
-  let glossaryFiltered = glossary.filter(function (item) {
-    let eachTerm = item.term;
-    let eachTermLow = eachTerm.toLowerCase();
+  let keywordContainerArray = [];
 
-    let eachDefinition = item.definition;
-    let eachDefinitionLow = eachDefinition.toLowerCase();
+  keywordContainerArray.push(dropDownSelect.value);
 
-    return eachTermLow.includes(searchWordLow) || eachDefinitionLow.includes(searchWordLow);
-  });
+  let allCheckbox = document.querySelectorAll("input.form-check-input");
+  for (let i = 0; i < allCheckbox.length; i++) {
+    if (allCheckbox[i].checked) {
+      keywordContainerArray.push(allCheckbox[i].value.toLowerCase());
+    }
+  }
 
-  console.log(glossaryFiltered);
+  keywordContainerArray.push(searchWordLow);
+  console.log(keywordContainerArray);
 
-  count = 1;
+  let glossaryFilteredForAll = [];
+
+  // looping thru each keyword in the keywordContainerArray
+  for (let i = 0; i < keywordContainerArray.length; i++) {
+    let keywordToMatch = keywordContainerArray[i];
+
+    // looping thru glossary and finding match
+    for (let j = 0; j < glossary.length; j++) {
+      // current looped glossary object
+      let currentGlossaryObject = glossary[j];
+
+      // getting the term key in current glossary object
+      let eachTerm = currentGlossaryObject.term;
+      let eachTermLow = eachTerm.toLowerCase();
+
+      // if found matches
+      if (eachTermLow.includes(keywordToMatch) && keywordToMatch != "") {
+        console.log(`Found a match in keywrdtomatch and term ${keywordToMatch} --- ${eachTermLow}`);
+        // push if not already exists
+        if (!glossaryFilteredForAll.includes(currentGlossaryObject)) {
+          glossaryFilteredForAll.push(currentGlossaryObject);
+        }
+      }
+
+      // getting the definition key in current glossary object
+      let eachDefinition = currentGlossaryObject.definition;
+      let eachDefinitionLow = eachDefinition.toLowerCase();
+
+      if (eachDefinitionLow.includes(keywordToMatch) && keywordToMatch != "") {
+        console.log(`Found a match in keywrdtomatch and definition ${keywordToMatch} --- ${eachDefinitionLow}`);
+        if (!glossaryFilteredForAll.includes(currentGlossaryObject)) {
+          glossaryFilteredForAll.push(currentGlossaryObject);
+        }
+      }
+
+      let classNumber = currentGlossaryObject.class;
+
+      // keywordToMatch cames from an array and we make sure that it is not empty string
+      if (classNumber == keywordToMatch && keywordToMatch != "") {
+        console.log(`Found a match in classNumberand glossClass ${keywordToMatch} --- ${classNumber}`);
+        if (!glossaryFilteredForAll.includes(currentGlossaryObject)) {
+          glossaryFilteredForAll.push(currentGlossaryObject);
+        }
+      }
+
+      //looping thru tagsArray
+      let tagsArray = currentGlossaryObject.tags;
+
+      for (let k = 0; k < tagsArray.length; k++) {
+        let currentTag = tagsArray[k];
+        if (currentTag.includes(keywordToMatch) && keywordToMatch != "") {
+          if (!glossaryFilteredForAll.includes(currentGlossaryObject)) {
+            glossaryFilteredForAll.push(currentGlossaryObject);
+          }
+        }
+      }
+    }
+  }
+
+  console.log(glossaryFilteredForAll);
+
+  alternateBackgroundCount = 1;
 
   divCenterInfo.innerHTML = "";
 
-  glossaryFiltered.forEach(insertHTMLDefault);
-
-  //   searchInput.value = "";
+  glossaryFilteredForAll.forEach(insertHTMLDefault);
 }
-
-// press enter during search works too!
-searchInput.addEventListener("keyup", function (event) {
-  if (event.keyCode === 13) {
-    event.preventDefault();
-    searchTerm();
-  }
-});
 
 searchBtn.addEventListener("click", searchTerm);
 
 //  -------------------------------------------------------------------------------
 //  -------------------------------------------------------------------------------
-//  --------------------------------------------------------------------------------class dropDown function
+//  -------------------------------------------------------------------------------
+//  --------------------------------------------------------------------------------class first dropDown function
 
-let classDropdown = document.querySelector("ul.class-drop");
+//  ---removed
 
+//  -------------------------------------------------------------------------------
+//  -------------------------------------------------------------------------------
+//  -------------------------------------------------------------------------------
+//  --------------------------------------------------------------------------------class-drop-select function
+// populating the class dropdown with glossary's item
+let dropSelect = document.querySelector(".class-drop-select");
+
+// contains the number of class in glossary
 let classArr = [];
 
+// we remove duplicates class number here
 function reducingItem(item, index) {
   //console.log(item.class); // log class in glossary , 00, 01, 02
-
-  // removing duplicate class number
+  // removing duplicate class number and pushing to classArr
   if (!classArr.includes(item.class)) {
     classArr.push(item.class);
   }
 }
 
-glossary.forEach(reducingItem);
+glossary.forEach(reducingItem); // all we do here is to populate the classArr
 
-// console.log(classArr);
-
-//appending each class item to dropdown
+//appending each class item to dropdown - select
 classArr.forEach(function (item, index) {
-  let li = document.createElement("li");
-  li.innerHTML = item;
-  li.classList.add("class-onclick");
-  li.classList.add("dropdown-item");
-  classDropdown.appendChild(li);
+  let opt = document.createElement("option");
+  opt.value = item;
+  opt.innerHTML = item;
+
+  dropSelect.appendChild(opt);
 });
-
-//getting LIST item to add event listener for search
-let totalLI = document.querySelectorAll("li.class-onclick");
-
-function onClassItemClicked() {
-  console.log(this.innerHTML);
-  // this will refer to 0,1,2,3,4
-  let num = this.innerHTML;
-
-  let glossaryFilteredForClass = glossary.filter(function (item) {
-    let classItem = item.class;
-    //     console.log(`${classItem} this is class item`);
-    return classItem == num;
-  });
-
-  console.log(glossaryFilteredForClass);
-
-  count = 1;
-
-  divCenterInfo.innerHTML = "";
-
-  glossaryFilteredForClass.forEach(insertHTMLDefault);
-}
-
-for (let i = 0; i < totalLI.length; i++) {
-  totalLI[i].addEventListener("click", onClassItemClicked);
-}
-
+//  -------------------------------------------------------------------------------
+//  -------------------------------------------------------------------------------
 //  -------------------------------------------------------------------------------
 //  -------------------------------------------------------------------------------
 //  --------------------------------------------------------------------------------tag dropDown function
+// populating the tags checkbox with glossary's item
 
 // div to append check-box containing terms
 let biggestDiv = document.querySelector("div.checkbox-tag");
@@ -151,6 +188,7 @@ let tagsArray = [];
 glossary.forEach(function (item) {
   // dont try this at home
   let currentFirst = item.tags;
+  // curentFirst is also an array so we loop thru it again
   currentFirst.forEach(function (item2) {
     if (!tagsArray.includes(item2)) {
       tagsArray.push(item2);
@@ -158,8 +196,9 @@ glossary.forEach(function (item) {
   });
 });
 
+// we loop the tags array and append to div
 tagsArray.forEach(function (item) {
-  //   console.log(item); // git github
+  //   console.log(item); // git github, programming
 
   // creating outerdiv element
   let outerDiv = document.createElement("div");
@@ -175,29 +214,6 @@ tagsArray.forEach(function (item) {
   input.name = "tags";
   input.value = item;
 
-  // adding eventListener
-  input.addEventListener("change", function () {
-    // if checked we will search for term related
-    if (this.checked) {
-      let tag = this.id;
-
-      let glossaryFilteredForTags = glossary.filter(function (item) {
-        let itemChosen = item.tags;
-        return itemChosen.includes(tag);
-      });
-
-      console.log(glossaryFilteredForTags);
-
-      count = 1;
-
-      divCenterInfo.innerHTML = "";
-
-      glossaryFilteredForTags.forEach(insertHTMLDefault);
-    } else {
-      console.log(`${this.value} is not checked`);
-    }
-  });
-
   //creating label
   let label = document.createElement("label");
   label.classList.add("form-check-label");
@@ -211,3 +227,29 @@ tagsArray.forEach(function (item) {
 });
 
 //--------------------------------------------
+//--------------------------------------------
+//-------------------------------------------- animation
+
+let arrow = document.querySelector(".arrow");
+let divAnimate = document.querySelector(".animate-top");
+divAnimate.style.position = "absolute";
+
+let topPos = -50;
+divAnimate.style.top = `${topPos}px`;
+
+document.body.onload = function () {
+  animatingTop();
+};
+
+function animatingTop() {
+  topPos += 2;
+  divAnimate.style.top = `${topPos}px`;
+
+  if (topPos == 0) {
+    divAnimate.style.position = "static";
+    arrow.style.visibility = "visible";
+  }
+  if (topPos < 0) {
+    setTimeout(animatingTop, 1000 / 60);
+  }
+}
